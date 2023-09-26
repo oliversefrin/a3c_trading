@@ -2,7 +2,7 @@
 # Данный файл содержит envinroment как в гуме
 # Готовит список файлов с полными именами для загрузки
 import numpy as np
-from configs import comission, PRICE_MAG
+from configs import COMISSION, PRICE_MAG
 
 # Реализация класса environment наподобие такогого из openai.gym
 
@@ -12,9 +12,9 @@ class environment:
         self.big_data = data_frame.values
         self.len = leng
         self.start_len = self.big_data.shape[0] - leng
-        #print(self.start_len, leng)
+        # print(self.start_len, leng)
         start_point = int(np.random.rand() * self.start_len)
-        self.data = self.big_data[start_point:start_point + leng, :]
+        self.data = self.big_data[start_point : start_point + leng, :]
         # close_prices
         self.prices = self.data[:, 3]
         self.iter = 0
@@ -25,7 +25,7 @@ class environment:
         self.done = False
         self.prev_equity = 0
         self.equity = 0
-        self.comission = comission
+        self.comission = COMISSION
         # Штраф за повторы
         self.same_steps = 0
         self.prev_act = 0
@@ -35,9 +35,12 @@ class environment:
         # if(act != self.n_shares
         # if abs(self.n_shares + act) <= self.max_shares:
         # print(PRICE_MAG)
-        if(self.n_shares != act):
-            self.cash = self.cash - self.prices[self.iter - 1] * \
-                (act - self.n_shares) - self.comission * PRICE_MAG * (1 + 0 * (self.same_steps < 3))
+        if self.n_shares != act:
+            self.cash = (
+                self.cash
+                - self.prices[self.iter - 1] * (act - self.n_shares)
+                - self.comission * PRICE_MAG * (1 + 0 * (self.same_steps < 3))
+            )
         self.n_shares = act
         # Эквити - суммарный объем денег, если сейчас все продать
         self.equity = self.cash + self.prices[self.iter] * self.n_shares
@@ -71,7 +74,7 @@ class environment:
         self.iter = 0
         self.done = False
         start_point = int(np.random.rand() * self.start_len)
-        self.data = self.big_data[start_point:start_point + self.len, :]
+        self.data = self.big_data[start_point : start_point + self.len, :]
         observation = self.data[self.iter]
         self.prices = self.data[:, 3]
         self.n_shares = 0
